@@ -19,15 +19,18 @@ import io.fabric.sdk.android.Fabric;
 
 public class LoginActivity extends Activity {
 
+    public static final String ConsummerKey = "2OViy7kUg5VvFWAs7ONRgFCaw";
+    public static final String ConsummerSecret = "1569OnKRNtfSiGvsK5XB9eTWZmxiLETMBSmsvavIKSiAnhvkDT";
+
     private SharedPreferences mSharedPreferences;
     private TwitterLoginButton loginButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TwitterAuthConfig authConfig =
-                new TwitterAuthConfig("m1EFbLZHkp9ezzNDtkHCzAtk1",
-                        "Qkrw1lvMmKCXv2gewOxKLMyUogjPYmoVMi5fkYhTjeCYH6WTRF");
+                new TwitterAuthConfig(ConsummerKey, ConsummerSecret);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.login_screen);
 
@@ -45,9 +48,6 @@ public class LoginActivity extends Activity {
             loginButton.setCallback(new Callback<TwitterSession>() {
                 @Override
                 public void success(Result<TwitterSession> result) {
-                    // Do something with result, which provides a
-                    // TwitterSession for making API calls
-
 //                    Start Main Activity
                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(i);

@@ -20,11 +20,13 @@
         <activity android:name=".MainActivity"
             android:label="Main Screen"></activity>
         <activity android:name=".DisplayFriendListActivity"
-            android:label="@string/friend_list"></activity>
+            android:label="@string/friend_list"
+            android:parentActivityName=".MainActivity"></activity>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0af15ea5ebb6f00198c153e87206ff1d292be93a" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>

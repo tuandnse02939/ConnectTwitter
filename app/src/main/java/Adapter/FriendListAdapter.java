@@ -22,13 +22,17 @@ public class FriendListAdapter extends ArrayAdapter<Friend> {
 
     private Context context;
     private final ArrayList<Friend> mList;
-    private LayoutInflater mInflater;
     private ImageLoader imageLoader;
 
     public FriendListAdapter(Context context, ArrayList<Friend> mListFriend){
         super(context, R.layout.friend_list, mListFriend);
         this.context = context;
         this.mList = mListFriend;
+    }
+
+    static class ViewHolder {
+        TextView name;
+        ImageView userImage;
     }
 
     @Override
@@ -66,10 +70,4 @@ public class FriendListAdapter extends ArrayAdapter<Friend> {
         return convertView;
     }
 
-
-
-    static class ViewHolder {
-        TextView name;
-        ImageView userImage;
-    }
 }

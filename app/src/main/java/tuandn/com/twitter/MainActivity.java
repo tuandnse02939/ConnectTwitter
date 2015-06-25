@@ -55,38 +55,12 @@ public class MainActivity extends Activity {
         welcome.setText("Hello, @" + session.getUserName());
     }
 
-    public void logout(View v){
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle(mContext.getString(R.string.logout));
-        builder.setMessage(mContext.getString(R.string.logout_message));
-        builder.setPositiveButton(mContext.getString(R.string.ok),
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        Intent i = new Intent(MainActivity.this, LoginActivity.class);
-                        startActivity(i);
-                        finish();
-                    }
-                });
-        builder.setCancelable(true);
-        builder.setNegativeButton(mContext.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-            }
-        });
-        builder.show();
-
-    }
-
     public void postOnWall(View v){
 
         EditText status = (EditText) findViewById(R.id.et_status);
         String status_content = status.getText().toString();
 
         TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-// Can also use Twitter directly: Twitter.getApiClient()
         StatusesService statusesService = twitterApiClient.getStatusesService();
         statusesService.update(status_content, null, null, null, null, null, null, null, new Callback<Tweet>() {
             @Override
@@ -102,7 +76,7 @@ public class MainActivity extends Activity {
     }
 
     public void ShowFriendList(View v){
-        if(Utils.isConnectingToInternet(getApplicationContext())){
+        if(Utils.isConnectingToInternet(MainActivity.this)){
             Intent i = new Intent(MainActivity.this,DisplayFriendListActivity.class);
             startActivity(i);
         }
