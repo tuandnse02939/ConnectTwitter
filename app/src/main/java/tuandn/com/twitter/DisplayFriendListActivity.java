@@ -99,12 +99,12 @@ public class DisplayFriendListActivity extends ListActivity {
         }
 
         protected void onPostExecute(ArrayList<Friend> frList) {
-            if(frList.size() == 0) {
+            if(frList.size() != 0) {
                 setListAdapter(new FriendListAdapter(DisplayFriendListActivity.this, frList));
             }
             else {
                 frList = handler.getFriends();
-                if(frList.size() == 0) {
+                if(frList.size() != 0) {
                     setListAdapter(new FriendListAdapter(DisplayFriendListActivity.this, frList));
                 }
                 else {
