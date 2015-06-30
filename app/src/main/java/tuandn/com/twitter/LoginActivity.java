@@ -56,7 +56,7 @@ public class LoginActivity extends Activity {
 
                 @Override
                 public void failure(TwitterException exception) {
-                    // Do something on failure
+                    Toast.makeText(getApplicationContext(),"Login failed",Toast.LENGTH_LONG).show();
                 }
             });
         }

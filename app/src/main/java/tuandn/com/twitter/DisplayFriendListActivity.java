@@ -3,6 +3,7 @@ package tuandn.com.twitter;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.twitter.sdk.android.core.TwitterSession;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
 import Adapter.FriendListAdapter;
+import Database.DatabaseHandler;
 import Model.Friend;
 import io.fabric.sdk.android.services.concurrency.AsyncTask;
 import twitter4j.TwitterException;
@@ -32,10 +34,13 @@ public class DisplayFriendListActivity extends ListActivity {
     private  TwitterSession session;
     private twitter4j.Twitter twitter;
     private long userID,lCursor = -1;
+    private DatabaseHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        handler = new DatabaseHandler(this);
 
         //Display Friend List
         displayFriendList();
@@ -45,17 +50,22 @@ public class DisplayFriendListActivity extends ListActivity {
     private void displayFriendList() {
         session =
                 com.twitter.sdk.android.Twitter.getSessionManager().getActiveSession();
-        userID = session.getUserId();
-        twitter = new TwitterFactory().getInstance();
+        if(session == null){
+            Toast.makeText(getApplicationContext(),"Load Session Failed",Toast.LENGTH_LONG).show();
+        }
+        else {
+            userID = session.getUserId();
+            twitter = new TwitterFactory().getInstance();
 
-        //Set Twitter Authentication
-        twitter.setOAuthConsumer(LoginActivity.ConsummerKey, LoginActivity.ConsummerSecret);
-        twitter4j.auth.AccessToken accessToken = new AccessToken(AccessToken, AccessSecret);
-        twitter.setOAuthAccessToken(accessToken);
+            //Set Twitter Authentication
+            twitter.setOAuthConsumer(LoginActivity.ConsummerKey, LoginActivity.ConsummerSecret);
+            twitter4j.auth.AccessToken accessToken = new AccessToken(AccessToken, AccessSecret);
+            twitter.setOAuthAccessToken(accessToken);
 
-        friendList = new ArrayList<Friend>();
+            friendList = new ArrayList<Friend>();
 
-        new GetFriends().execute();
+            new GetFriends().execute();
+        }
     }
 
     class GetFriends extends AsyncTask<Void, Void, ArrayList<Friend>> {
@@ -69,9 +79,18 @@ public class DisplayFriendListActivity extends ListActivity {
                 users = twitter.getFriendsList(userID, lCursor, FriendLimit);
                 for (int i = 0; i < users.size(); i++) {
                     Friend f = new Friend();
+                    f.setId(users.get(i).getId());
                     f.setName(users.get(i).getName());
                     f.setImage(users.get(i).getBiggerProfileImageURL());
                     friendList.add(f);
+
+                    //Save/Update Friend to database
+                    if(handler.isFriendExist(f.getId())){
+                        handler.updateFriend(f);
+                    }
+                    else {
+                        handler.addFriend(f);
+                    }
                 }
             } catch (TwitterException e){
                 e.printStackTrace();
@@ -80,7 +99,18 @@ public class DisplayFriendListActivity extends ListActivity {
         }
 
         protected void onPostExecute(ArrayList<Friend> frList) {
-            setListAdapter(new FriendListAdapter(DisplayFriendListActivity.this, frList));
+            if(frList.size() == 0) {
+                setListAdapter(new FriendListAdapter(DisplayFriendListActivity.this, frList));
+            }
+            else {
+                frList = handler.getFriends();
+                if(frList.size() == 0) {
+                    setListAdapter(new FriendListAdapter(DisplayFriendListActivity.this, frList));
+                }
+                else {
+                    Toast.makeText(getApplication(),"Can not get Friends",Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 }
